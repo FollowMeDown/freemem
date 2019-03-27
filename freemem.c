@@ -1,4 +1,3 @@
-/* See LICENSE for license details */
 #include <sys/types.h>
 #include <sys/mount.h>
 #include <sys/sysctl.h>
@@ -10,8 +9,13 @@
 #include <unistd.h>
 
 #define pagetok(size) ((size) << pageshift)
-#define LOG1024			10
+#define LOG1024			    10
 #define NUM_STRINGS 	 	11
+
+ /*
+  *  ToDo:
+  *  Add Usage func
+  */
 
 struct meminfo_s {
 	int total;
@@ -84,7 +88,8 @@ read_meminfo()
 static void
 print_usage()
 {
-	fprintf(stderr, "Usage output here...\n");
+    fputs("Usage: freemem [ -v | -h ]\n", stderr);
+    exit(1);
 }
 
 int
@@ -94,7 +99,7 @@ main(int argc, char *argv[])
 	while ((ch = getopt(argc, argv, "vh")) != -1) {
 		switch (ch) {
 			case 'v':
-				fprintf(stderr, "memfree-"VERSION"\n");
+				fprintf(stderr, "freemem-"VERSION"\n");
 				return 0;
 			case 'h':
 				print_usage();
@@ -113,7 +118,6 @@ main(int argc, char *argv[])
 	if (pledge("stdio", NULL) == -1)
 		err(EXIT_FAILURE, "pledge");
 
-
 	printf("\ttotal\t\tused\t\tfree\t\tshared\t\tbuffers\t\tcached\n");
 	printf("%-7s\t%s\t\t%s\t\t%s\t\t0K\t\t%s\t\t%s\n", "Mem:",
 		format_k(meminfo.total),
@@ -125,7 +129,7 @@ main(int argc, char *argv[])
 
 	int64_t bufcache = meminfo.buffers + meminfo.cached;
 
-	printf("-/+ buffers/cache:\t%s\t\t%s\n",
+	printf("\n-/+ buffers/cache:\t%s\t\t%s\n",
 		format_k(meminfo.used - bufcache),
 		format_k(meminfo.free + bufcache)
 	);
